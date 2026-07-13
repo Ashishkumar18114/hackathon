@@ -1,0 +1,20 @@
+﻿# Environment variables
+.env
+backend/.env
+
+# Virtual environment
+venv/
+backend/venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+frontend/script.js.backup

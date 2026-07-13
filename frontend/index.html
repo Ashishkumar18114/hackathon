@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fraud Shield - Public Safety Initiative Against Digital Fraud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="utility-inner">
+      <span class="utility-item">Public Safety Initiative</span>
+      <div class="utility-right">
+        <span class="utility-item helpline-inline">Cyber Helpline: <strong>1930</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tricolor-strip"></div>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand">
+        <span class="brand-badge">FS</span>
+        <div class="brand-text">
+          <span class="brand-name">Fraud Shield</span>
+          <span class="brand-tag">AI-Powered Scam &amp; Fraud Detection</span>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <a href="#check-tool">Check a Call</a>
+        <a href="#voice-tool">Voice Recording</a>
+        <a href="#analyze-tool">Analyze Transcript</a>
+        <a href="#learning-corner">Safety Guide</a>
+        <a href="#history-panel">Recent Checks</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">Live threat pattern &bull; updated 2026</span>
+        <h1>Not sure if that call was real? <span class="hero-highlight">Ask Fraud Shield.</span></h1>
+        <p>Describe any suspicious call, message, or video request and get an instant AI risk read - built on real "digital arrest" and fraud patterns reported across India.</p>
+        <div class="hero-ctas">
+          <a href="#check-tool" class="hero-btn-primary">Check a call now</a>
+          <a href="#learning-corner" class="hero-btn-secondary">Learn the warning signs</a>
+        </div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-row">
+          <span class="stat-number">Rs 1,776 Cr</span>
+          <span class="stat-label">lost to digital arrest scams, Jan-Sep 2024</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-row">
+          <span class="stat-number">1930</span>
+          <span class="stat-label">National Cybercrime Helpline - 24x7</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-row">
+          <span class="stat-number live">LIVE</span>
+          <span class="stat-label">This tool never stores what you type</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="app">
+
+    <section class="category-grid">
+      <article class="category-card">
+        <div class="category-icon icon-call">Call</div>
+        <h3>Voice &amp; Video Call Scams</h3>
+        <p>Fake "CBI", "Customs", or "police" calls demanding you stay on video or pay to avoid arrest.</p>
+        <a href="#check-tool" class="category-btn">Check a call</a>
+      </article>
+      <article class="category-card">
+        <div class="category-icon icon-money">Fraud</div>
+        <h3>Financial Fraud</h3>
+        <p>OTP requests, fake bank alerts, UPI refund traps, and lottery or prize-fee scams.</p>
+        <a href="#check-tool" class="category-btn">Check a message</a>
+      </article>
+      <article class="category-card">
+        <div class="category-icon icon-web">Web</div>
+        <h3>Other Cyber Fraud</h3>
+        <p>Phishing links, fake job offers, impersonated officials, and account-takeover attempts.</p>
+        <a href="#analyze-tool" class="category-btn">Analyze transcript</a>
+      </article>
+    </section>
+
+    <main class="card chat-card" id="check-tool">
+      <div class="card-header">
+        <h2>Ask Fraud Shield</h2>
+        <span class="card-subtitle">Describe what happened, in your own words</span>
+      </div>
+
+      <div id="chat-log" class="chat-log">
+        <div class="message bot">
+          <p>Hi, I'm Fraud Shield. Describe a suspicious call or message you received, and I'll tell you if it looks like a scam. Or tap a common scenario below.</p>
+        </div>
+      </div>
+
+      <div class="chip-row" id="chip-row">
+        <button class="chip" data-text="Someone called claiming to be from CBI, said my Aadhaar was linked to a crime, and told me to stay on video call.">CBI impersonation</button>
+        <button class="chip" data-text="A caller said they are from Customs and a package with illegal items was seized in my name, demanding immediate payment.">Customs threat</button>
+        <button class="chip" data-text="Received a call saying suspicious activity was found on my bank account and I need to share my OTP to secure it.">Fake bank call</button>
+        <button class="chip" data-text="A message says I won a lottery and need to pay a processing fee to claim the prize.">Lottery scam</button>
+      </div>
+
+      <div class="input-row">
+        <textarea id="user-input" placeholder="Describe the call or message you received..."></textarea>
+        <button id="send-btn">Check</button>
+      </div>
+    </main>
+
+    <section class="card voice-card" id="voice-tool">
+      <div class="card-header">
+        <h2>Analyze a Voice Recording</h2>
+        <span class="card-subtitle">Record the call from your speaker, or upload an audio file - we transcribe it and run the same risk check</span>
+      </div>
+
+      <div class="voice-controls">
+        <button id="record-btn" class="record-btn">
+          <span class="record-dot"></span>
+          Start Recording
+        </button>
+        <span id="record-timer" class="record-timer">00:00</span>
+
+        <div class="upload-divider">or</div>
+
+        <label for="audio-upload-input" class="upload-label">Upload audio file</label>
+        <input type="file" id="audio-upload-input" accept="audio/*" hidden>
+      </div>
+
+      <audio id="audio-preview" class="audio-preview" controls style="display:none;"></audio>
+
+      <p id="voice-status" class="voice-status"></p>
+
+      <button id="transcribe-btn" class="transcribe-btn" disabled>Transcribe &amp; Analyze</button>
+    </section>
+
+    <section class="card classifier-card" id="analyze-tool">
+      <div class="card-header">
+        <h2>Advanced Transcript Analysis</h2>
+        <span class="card-subtitle">Get a detailed risk score with matched fraud indicators</span>
+      </div>
+      <textarea id="transcript-input" placeholder="Paste a full call or message transcript..."></textarea>
+      <button id="classify-btn">Analyze Transcript</button>
+      <div id="classify-result" class="classify-result"></div>
+    </section>
+
+    <section class="learning-corner" id="learning-corner">
+      <div class="section-heading">
+        <h2>Learning Corner</h2>
+      </div>
+      <div class="learning-grid">
+        <article class="learning-card">
+          <h3>How Fraud Shield Works</h3>
+          <p>A plain-language walkthrough of how the AI reads a transcript and scores its risk.</p>
+          <a href="#" class="learning-link">Read more -&gt;</a>
+        </article>
+        <article class="learning-card">
+          <h3>Cyber Safety Checklist</h3>
+          <p>Practical habits - never share OTPs, verify via official numbers, and pause before paying.</p>
+          <a href="#" class="learning-link">Read more -&gt;</a>
+        </article>
+        <article class="learning-card">
+          <h3>Common Scam Patterns</h3>
+          <p>The scripts fraudsters reuse most: fear, urgency, authority, and isolation.</p>
+          <a href="#" class="learning-link">Read more -&gt;</a>
+        </article>
+        <article class="learning-card">
+          <h3>How to File a Report</h3>
+          <p>Step-by-step guidance for reporting to cybercrime.gov.in or calling 1930.</p>
+          <a href="#" class="learning-link">Read more -&gt;</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="card history-card" id="history-panel">
+      <div class="card-header">
+        <h2>Recent Checks</h2>
+        <span class="card-subtitle">This session only - nothing is stored on our servers</span>
+      </div>
+      <div id="history-list" class="history-list">
+        <p class="history-empty">No checks yet. Your recent analyses will appear here.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="mailto:team.fraudshield@gmail.com?subject=Fraud%20Shield%20Feedback">Feedback</a>
+        <a href="#" data-modal="faq">FAQ</a>
+        <a href="mailto:team.fraudshield@gmail.com?subject=Fraud%20Shield%20Contact">Contact Us</a>
+        <a href="#" data-modal="policies">Website Policies</a>
+        <a href="#" data-modal="privacy">Privacy Policy</a>
+        <a href="#" data-modal="disclaimer">Disclaimer</a>
+      </div>
+      <div class="footer-social">
+        <a href="https://x.com/kumar_ashi83412" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">X</a>
+        <a href="#" data-modal="connect" aria-label="Facebook">f</a>
+        <a href="https://github.com/Ashishkumar18114" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GH</a>
+        <a href="#" data-modal="connect" aria-label="Instagram">I</a>
+        <a href="https://www.linkedin.com/in/ashish-kumar-2bb739285/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Fraud Shield is an independent hackathon prototype built for public safety awareness. It is <strong>not affiliated with the Government of India</strong>.</p>
+      <p>For official reporting, always use <strong>cybercrime.gov.in</strong>, <strong>sancharsaathi.gov.in</strong> (Chakshu), or call <strong>1930</strong>.</p>
+    </div>
+  </footer>
+
+  <div id="footer-modal-overlay" class="modal-overlay">
+    <div class="modal-box">
+      <button id="modal-close-btn" class="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-content" class="modal-content"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

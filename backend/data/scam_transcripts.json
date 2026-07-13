@@ -1,0 +1,39 @@
+﻿{
+  "scam_examples": [
+    {
+      "id": "S001",
+      "label": "digital_arrest_scam",
+      "channel": "video_call",
+      "transcript": "Caller identifies as CBI officer, states a parcel with the victim Aadhaar was intercepted containing banknotes and drugs. Says the victim name is linked to a money laundering case in Mumbai. Instructs the victim not to disconnect the call or contact anyone, including family, until verification is complete. Requests the victim stay visible on video at all times. Demands the victim transfer funds to a RBI verification account to prove innocence, promising refund after clearance.",
+      "risk_markers": ["law_enforcement_impersonation", "isolation_instruction", "continuous_surveillance_demand", "urgency", "money_transfer_for_verification"]
+    },
+    {
+      "id": "S002",
+      "label": "digital_arrest_scam",
+      "channel": "phone_call",
+      "transcript": "Caller claims to be from Customs Department, says an international courier addressed to the victim was seized with illegal items. Tells the victim they are now under digital house arrest and must remain on camera. Transfers call to a fake senior officer who threatens immediate arrest unless a settlement fee is paid within one hour via UPI.",
+      "risk_markers": ["law_enforcement_impersonation", "fake_authority_escalation", "time_pressure", "upi_payment_demand", "threat_of_arrest"]
+    },
+    {
+      "id": "B001",
+      "label": "benign",
+      "channel": "phone_call",
+      "transcript": "Caller from the victim bank confirms a recent debit card transaction and asks the customer to verify it was authorized. Does not ask for OTP, PIN, or password. Provides a callback number matching the official bank helpline.",
+      "risk_markers": []
+    },
+    {
+      "id": "B002",
+      "label": "benign",
+      "channel": "whatsapp_message",
+      "transcript": "Message from a courier company with a tracking link for a package the recipient recently ordered online, matching an order confirmation email received earlier the same week.",
+      "risk_markers": []
+    },
+    {
+      "id": "S003",
+      "label": "digital_arrest_scam",
+      "channel": "video_call",
+      "transcript": "Caller impersonates a Delhi Police officer using a fake uniform background on video. Tells the victim their PAN card was used to open a bank account involved in terror financing. Insists the victim cannot end the call, mute the microphone, or leave the frame. Demands immediate transfer of fixed deposit funds to avoid asset freezing.",
+      "risk_markers": ["law_enforcement_impersonation", "visual_authority_props", "continuous_surveillance_demand", "fund_transfer_to_avoid_freezing"]
+    }
+  ]
+}
