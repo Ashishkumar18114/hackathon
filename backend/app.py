@@ -35,7 +35,7 @@ def verify_clerk_session(request: Request):
         request_state = clerk_sdk.authenticate_request(
             request,
             AuthenticateRequestOptions(
-                authorized_parties=["http://localhost:5500", "http://127.0.0.1:5500"]
+                authorized_parties=["http://localhost:5500", "http://127.0.0.1:5500", "https://frontend-neon-zeta-13.vercel.app"]
             ),
         )
     except Exception:
@@ -196,6 +196,7 @@ async def transcribe_audio(file: UploadFile = File(...), user=Depends(enforce_ra
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
 
 
 
