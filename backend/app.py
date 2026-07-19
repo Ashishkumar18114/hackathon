@@ -1,18 +1,22 @@
-﻿import os
+import os
 import json
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from clerk_backend_api import Clerk
+from clerk_backend_api.security.types import AuthenticateRequestOptions
 
 load_dotenv()
 
-client = genai.Client(api_key=os.environ.get("Q.Ab8RN6Jvt-uJVyVbzAd_t9CtmSZIJzLT_PGyo5lPS46i7leDrA"))
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 MODEL_NAME = "gemini-2.5-flash"
+
+clerk_sdk = Clerk(bearer_auth=os.environ.get("CLERK_SECRET_KEY"))
 
 DATA_PATH = Path(__file__).parent / "data" / "scam_transcripts.json"
 
@@ -24,6 +28,50 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def verify_clerk_session(request: Request):
+    try:
+        request_state = clerk_sdk.authenticate_request(
+            request,
+            AuthenticateRequestOptions(
+                authorized_parties=["http://localhost:5500", "http://127.0.0.1:5500"]
+            ),
+        )
+    except Exception:
+        raise HTTPException(status_code=401, detail="Could not verify session")
+
+    if not request_state.is_signed_in:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    return request_state.payload
+
+
+import time
+from collections import defaultdict
+
+RATE_LIMIT_MAX_REQUESTS = 15
+RATE_LIMIT_WINDOW_SECONDS = 600
+
+request_log = defaultdict(list)
+
+
+def enforce_rate_limit(user_payload: dict = Depends(verify_clerk_session)):
+    user_id = user_payload.get("sub", "anonymous")
+    now = time.time()
+    timestamps = request_log[user_id]
+
+    while timestamps and timestamps[0] < now - RATE_LIMIT_WINDOW_SECONDS:
+        timestamps.pop(0)
+
+    if len(timestamps) >= RATE_LIMIT_MAX_REQUESTS:
+        raise HTTPException(
+            status_code=429,
+            detail="You have reached the request limit. Please try again in a few minutes.",
+        )
+
+    timestamps.append(now)
+    return user_payload
 
 
 class ClassifyRequest(BaseModel):
@@ -43,7 +91,7 @@ into transferring money.
 
 Known risk markers include: law enforcement or regulator impersonation, isolation instructions,
 demands to stay on video continuously, fabricated documents, urgency, demands for money transfer
-"for verification", requests for OTP/PIN/net-banking credentials, requests to install remote
+"for verification", requests for OTP/PIN/net-banking credentials, requeststo install remote
 screen-sharing apps, and threats of arrest or asset freezing.
 
 Respond ONLY with a JSON object, no other text, matching this schema:
@@ -90,7 +138,7 @@ def sample_transcripts():
 
 
 @app.post("/classify")
-def classify(req: ClassifyRequest):
+def classify(req: ClassifyRequest, user=Depends(enforce_rate_limit)):
     if not req.transcript.strip():
         raise HTTPException(status_code=400, detail="transcript cannot be empty")
 
@@ -108,7 +156,7 @@ def classify(req: ClassifyRequest):
 
 
 @app.post("/chat")
-def chat(req: ChatRequest):
+def chat(req: ChatRequest, user=Depends(enforce_rate_limit)):
     if not req.message.strip():
         raise HTTPException(status_code=400, detail="message cannot be empty")
 
@@ -125,7 +173,7 @@ def chat(req: ChatRequest):
 
 
 @app.post("/transcribe")
-async def transcribe_audio(file: UploadFile = File(...)):
+async def transcribe_audio(file: UploadFile = File(...), user=Depends(enforce_rate_limit)):
     audio_bytes = await file.read()
     if not audio_bytes:
         raise HTTPException(status_code=400, detail="uploaded audio is empty")
@@ -148,3 +196,8 @@ async def transcribe_audio(file: UploadFile = File(...)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
+
+
+
+

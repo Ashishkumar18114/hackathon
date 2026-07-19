@@ -931,3 +931,62 @@ button:disabled {
   font-size: 12.5px;
   color: #1d4ed8;
 }
+
+.clerk-auth-area {
+  display: flex;
+  align-items: center;
+}
+
+.clerk-signin-btn {
+  background: #1e3a8a;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.clerk-signin-btn:hover {
+  background: #1e40af;
+}
+
+#clerk-user-button {
+  display: flex;
+  align-items: center;
+}
+
+.cl-userButtonBox {
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.spinner.dark {
+  border: 2px solid rgba(30, 58, 138, 0.25);
+  border-top-color: #1e3a8a;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,10 +1,8 @@
-﻿const API_BASE = "http://localhost:8000";
+const API_BASE = "http://localhost:8000";
 
 const chatLog = document.getElementById("chat-log");
 const userInput = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
-const languageSelect = document.getElementById("language-select");
-const languageSelectTop = document.getElementById("language-select-top");
 const chipRow = document.getElementById("chip-row");
 
 const transcriptInput = document.getElementById("transcript-input");
@@ -28,15 +26,6 @@ let recordSeconds = 0;
 let timerInterval = null;
 let isRecording = false;
 
-if (languageSelectTop) {
-  languageSelectTop.addEventListener("change", () => {
-    languageSelect.value = languageSelectTop.value;
-  });
-  languageSelect.addEventListener("change", () => {
-    languageSelectTop.value = languageSelect.value;
-  });
-}
-
 function addMessage(text, sender) {
   const div = document.createElement("div");
   div.className = `message ${sender}`;
@@ -56,20 +45,23 @@ async function sendChat(prefilledText) {
   userInput.value = "";
   sendBtn.disabled = true;
 
-  const thinkingMsg = addMessage("Checking...", "bot");
+  const thinkingMsg = addMessage("", "bot");
+  thinkingMsg.querySelector("p").innerHTML = '<span class="spinner dark"></span>Checking...';
 
   try {
+    const token = await getClerkToken();
     const res = await fetch(`${API_BASE}/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: message, language: languageSelect.value }),
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: JSON.stringify({ message: message, language: "en" }),
     });
     if (!res.ok) throw new Error("Server error");
     const data = await res.json();
+    thinkingMsg.querySelector("p").innerHTML = "";
     thinkingMsg.querySelector("p").textContent = data.reply;
   } catch (err) {
     thinkingMsg.querySelector("p").textContent =
-      "Sorry, I could not reach the server. Please check the backend is running.";
+      "I'm having trouble responding right now. Please try again in a moment - if this keeps happening, the service may be experiencing high demand.";
   } finally {
     sendBtn.disabled = false;
   }
@@ -175,8 +167,10 @@ transcribeBtn.addEventListener("click", async () => {
   formData.append("file", currentAudioBlob, filename);
 
   try {
+    const token = await getClerkToken();
     const res = await fetch(`${API_BASE}/transcribe`, {
       method: "POST",
+      headers: { "Authorization": `Bearer ${token}` },
       body: formData,
     });
     if (!res.ok) throw new Error("Server error");
@@ -188,7 +182,7 @@ transcribeBtn.addEventListener("click", async () => {
     await runClassify();
     setVoiceStatus("Analysis complete - see results below.");
   } catch (err) {
-    setVoiceStatus("Could not transcribe audio. Check the backend is running and has a valid API key.", true);
+    setVoiceStatus("We could not transcribe that recording. Please try again, or upload the audio file instead.", true);
   } finally {
     transcribeBtn.disabled = false;
   }
@@ -337,12 +331,13 @@ async function runClassify() {
 
   classifyBtn.disabled = true;
   classifyResult.classList.add("visible");
-  classifyResult.innerHTML = "<p>Analyzing transcript...</p>";
+  classifyResult.innerHTML = '<p><span class="spinner dark"></span>Analyzing transcript...</p>';
 
   try {
+    const token = await getClerkToken();
     const res = await fetch(`${API_BASE}/classify`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ transcript: transcript, channel: "unknown" }),
     });
     if (!res.ok) throw new Error("Server error");
@@ -350,7 +345,7 @@ async function runClassify() {
     renderClassifyResult(data, transcript);
     addToHistory(data);
   } catch (err) {
-    classifyResult.innerHTML = "<p>Could not reach the server. Please check the backend is running.</p>";
+    classifyResult.innerHTML = "<p>We could not complete the analysis right now. Please try again in a moment.</p>";
   } finally {
     classifyBtn.disabled = false;
   }
@@ -431,3 +426,82 @@ modalOverlay.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeModal();
 });
+
+// ---------- Clerk Auth ----------
+
+const clerkAuthArea = document.getElementById("clerk-auth-area");
+const gatedSections = ["#check-tool", "#voice-tool", "#analyze-tool"].map((id) =>
+  document.querySelector(id)
+);
+
+function setGatedSectionsVisible(visible) {
+  gatedSections.forEach((el) => {
+    if (!el) return;
+    el.style.opacity = visible ? "1" : "0.4";
+    el.style.pointerEvents = visible ? "auto" : "none";
+  });
+}
+
+async function getClerkToken() {
+  if (!window.Clerk || !window.Clerk.session) return null;
+  try {
+    return await window.Clerk.session.getToken();
+  } catch (err) {
+    return null;
+  }
+}
+
+async function initClerk() {
+  await window.Clerk.load();
+
+  if (window.Clerk.user) {
+    setGatedSectionsVisible(true);
+    clerkAuthArea.innerHTML = "";
+    const userDiv = document.createElement("div");
+    userDiv.id = "clerk-user-button";
+    clerkAuthArea.appendChild(userDiv);
+    window.Clerk.mountUserButton(userDiv);
+  } else {
+    setGatedSectionsVisible(false);
+    clerkAuthArea.innerHTML = "";
+    const signInDiv = document.createElement("div");
+    signInDiv.id = "clerk-sign-in-btn";
+    clerkAuthArea.appendChild(signInDiv);
+
+    const btn = document.createElement("button");
+    btn.textContent = "Sign In";
+    btn.className = "clerk-signin-btn";
+    btn.addEventListener("click", () => {
+      window.Clerk.openSignIn();
+    });
+    signInDiv.appendChild(btn);
+  }
+}
+
+let clerkListenerAttached = false;
+
+window.addEventListener("load", () => {
+  if (window.Clerk) {
+    initClerk().then(() => {
+      if (!clerkListenerAttached) {
+        window.Clerk.addListener(() => initClerk());
+        clerkListenerAttached = true;
+      }
+    });
+  } else {
+    document.addEventListener("clerk:load", () => {
+      initClerk().then(() => {
+        if (!clerkListenerAttached) {
+          window.Clerk.addListener(() => initClerk());
+          clerkListenerAttached = true;
+        }
+      });
+    });
+  }
+});
+
+
+
+
+
+
